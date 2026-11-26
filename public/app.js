@@ -110,7 +110,7 @@ node.querySelector('.get-item').addEventListener('click', async (event) =>{
       node.querySelector('article').dataset.itemId = item._id;
       node.querySelector('.job-title').textContent = item.category;
       
-      node.querySelector('.employer').textContent = (`colour:  ${item.colour}`);
+      node.querySelector('.employer').textContent = (`|    colour:  ${item.colour}`);
       node.querySelector('.quant').textContent = (`${item.quantity} left in storage`);
       node.querySelector('.dates').textContent =(`stored at: ${item.location}`);
       node.querySelector('.accomplishment').textContent = (`details: ${item.description}`);
