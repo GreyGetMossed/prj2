@@ -3,51 +3,62 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Resume builder demo</title>
+  <title>Hobby Material Organizer
+  </title>
   <link rel="stylesheet" href="/styles.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
   <main class="layout">
-    <section class="panel" aria-labelledby="form-heading">
-      <p class="eyebrow">Resume builder demo</p>
-      <h1 id="form-heading">Build a resume</h1>
-      <p>Add a fictional work experience. Entries are public and shared with everyone using this demo.</p>
+    <section class="left">
+      <section class="drawer" aria-labelledby="form-heading">
+        <div id="buttonitems"></div>
+
+       <!--<button class="get-item" id="test" type="button">Search test drawer items</button>
+        <button class="get-item" id="fabric" type="button">Search fabric drawer items</button>-->
+
+     </section>
+     <section class="panel" aria-labelledby="form-heading">
+      
+      <p class="eyebrow">Your Crafting Cubbord</p>
+      <h1 id="form-heading">Add a item to your collection</h1>
       <form id="resume-form" novalidate>
         <div class="field">
-          <label for="job-title">Job title</label>
-          <input id="job-title" name="job_title" type="text" required maxlength="100" aria-describedby="job-title-error">
+          <label for="job-title">Item category</label>
+          <input id="job-title" name="category" type="text" required maxlength="100" aria-describedby="job-title-error" placeholder="This is the category you will search for your item by">
           <span class="error" id="job-title-error"></span>
         </div>
         <div class="field">
-          <label for="employer">Employer</label>
-          <input id="employer" name="employer" type="text" required maxlength="100" aria-describedby="employer-error">
+          <label for="employer">colour</label>
+          <input id="employer" name="colour" type="text" maxlength="100" aria-describedby="employer-error" placeholder="blue">
           <span class="error" id="employer-error"></span>
         </div>
         <div class="years">
           <div class="field">
-            <label for="start-year">Start year</label>
-            <input id="start-year" name="start_year" type="number" required min="1900" max="2100" step="1" placeholder="2020" aria-describedby="start-year-error">
+            <label for="start-year">quantity, include your unit of measure</label>
+            <input id="start-year" name="quantity" type="string" placeholder="5m" aria-describedby="start-year-error">
             <span class="error" id="start-year-error"></span>
           </div>
           <div class="field">
-            <label for="end-year">End year <span class="optional">(optional)</span></label>
-            <input id="end-year" name="end_year" type="number" min="1900" max="2100" step="1" placeholder="Present" aria-describedby="end-year-error">
+            <label for="end-year">location stored <span class="optional">(optional)</span></label>
+            <input id="end-year" name="location" type="text" placeholder="shelf" aria-describedby="end-year-error">
             <span class="error" id="end-year-error"></span>
           </div>
         </div>
         <div class="field">
-          <label for="accomplishment">Accomplishment</label>
-          <textarea id="accomplishment" name="accomplishment" rows="4" required maxlength="1000" aria-describedby="accomplishment-error"></textarea>
+          <label for="accomplishment">description- optional</label>
+          <textarea id="accomplishment" name="description" rows="4" maxlength="1000" aria-describedby="accomplishment-error" placeholder="any additional notes about this item"></textarea>
           <span class="error" id="accomplishment-error"></span>
         </div>
         <div class="form-actions">
-          <button type="submit">Add experience</button>
+          <button type="submit">Add item</button>
           <button id="cancel-edit" class="secondary" type="button" hidden>Cancel edit</button>
         </div>
         <p id="form-status" role="status" aria-live="polite"></p>
       </form>
     </section>
+    </section>
+  
     <section class="resume" aria-labelledby="resume-heading">
       <header class="resume-header">
         <p class="eyebrow">A shared example</p>
@@ -61,7 +72,9 @@
   </main>
   <template id="resume-item-template">
     <article class="experience">
-      <div class="experience-heading"><h3 class="job-title"></h3><p class="dates"></p></div>
+      <div class="experience-heading"><h3 class="job-title"></h3> <p class="dates"></p></div>
+      <p class="dates"></p>
+      <p class="quant"></p>
       <p class="employer"></p>
       <p class="accomplishment"></p>
       <div class="item-actions">
@@ -69,6 +82,9 @@
         <button class="delete-item secondary" type="button">Delete</button>
       </div>
     </article>
+  </template>
+  <template id="button-template">
+      <button class="get-item" id="" type="button">template button</button>
   </template>
 </body>
 </html>

@@ -1,13 +1,22 @@
+
 const form = document.querySelector('#resume-form');
 const formStatus = document.querySelector('#form-status');
 const resumeStatus = document.querySelector('#resume-status');
 const resumeItems = document.querySelector('#resume-items');
+const buttonitems = document.querySelector('#buttonitems');
 const template = document.querySelector('#resume-item-template');
+const bttemplate = document.querySelector('#button-template')
 const submitButton = form.querySelector('button[type="submit"]');
 const cancelEditButton = document.querySelector('#cancel-edit');
 const fields = [...form.querySelectorAll('input, textarea')];
 let editingId = null;
 let busy = false;
+const getItemsButtons = document.querySelectorAll('.get-item');
+// const getitem = document.getElementById('get-item');
+
+
+
+
 
 function setBusy(value) {
   busy = value;
@@ -17,10 +26,12 @@ function setBusy(value) {
   for (const button of resumeItems.querySelectorAll('button')) button.disabled = value;
 }
 
+
+
 function clearForm() {
   editingId = null;
   form.reset();
-  submitButton.textContent = 'Add experience';
+  submitButton.textContent = 'Add item';
   cancelEditButton.hidden = true;
   for (const field of fields) {
     field.setCustomValidity('');
@@ -50,11 +61,7 @@ function validateField(field) {
   if (field.type === 'text' || field.tagName === 'TEXTAREA') {
     field.setCustomValidity(field.validity.valueMissing || field.value.trim() ? '' : 'Enter a value that is not just whitespace.');
   }
-  const valid = field.checkValidity();
-  document.getElementById(`${field.id}-error`).textContent = valid ? '' : field.validationMessage;
-  if (valid) field.removeAttribute('aria-invalid');
-  else field.setAttribute('aria-invalid', 'true');
-  return valid;
+  
 }
 
 for (const field of fields) {
@@ -62,20 +69,51 @@ for (const field of fields) {
   field.addEventListener('blur', () => validateField(field));
 }
 
+
+//step one, make this happen on a button click instead of automatically
+
+//we got a button but we have to stop it from running the fetch immediately while still loading the rest of it i think
+ 
 async function loadItems() {
+  
+try{
+ const response = await fetch(`/api/resume-items`);
+ //derive category list from all data.
+
+ const result = await response.json();
+ console.log(result)
+ let categories = new Set(result.map(result => result.category))
+ console.log(categories)
+ console.log(Array.from(categories))
+ const cats = Array.from(categories)
+ console.log(cats)
+ const fragment = document.createDocumentFragment();
+ for (const item of cats) {
+  const node = bttemplate.content.cloneNode(true);
+node.querySelector('.get-item').textContent = item;
+node.querySelector('.get-item').setAttribute('id', item);
+node.querySelector('.get-item').addEventListener('click', async (event) =>{
   resumeStatus.textContent = 'Loading experiences…';
+
+  const element = event.target
+  console.log(element)
+  console.log(element.id)
+
+  // console.log(element.id.value)
   try {
-    const response = await fetch('/api/resume-items');
+    const response = await fetch(`/api/resume-items?category=${element.id}`);
     if (!response.ok) throw new Error('Unable to load experiences. Please try again later.');
     const items = await response.json();
     const fragment = document.createDocumentFragment();
     for (const item of items) {
       const node = template.content.cloneNode(true);
       node.querySelector('article').dataset.itemId = item._id;
-      node.querySelector('.job-title').textContent = item.job_title;
-      node.querySelector('.employer').textContent = item.employer;
-      node.querySelector('.dates').textContent = `${item.start_year} – ${item.end_year ?? 'Present'}`;
-      node.querySelector('.accomplishment').textContent = item.accomplishment;
+      node.querySelector('.job-title').textContent = item.category;
+      
+      node.querySelector('.employer').textContent = (`colour:  ${item.colour}`);
+      node.querySelector('.quant').textContent = (`${item.quantity} left in storage`);
+      node.querySelector('.dates').textContent =(`stored at: ${item.location}`);
+      node.querySelector('.accomplishment').textContent = (`details: ${item.description}`);
       const editButton = node.querySelector('.edit-item');
       const deleteButton = node.querySelector('.delete-item');
       editButton.setAttribute('aria-label', `Edit ${item.job_title} at ${item.employer}`);
@@ -90,13 +128,35 @@ async function loadItems() {
     resumeStatus.textContent = items.length ? '' : 'No experiences yet. Add the first one above.';
     return true;
   } catch {
-    resumeStatus.textContent = 'Unable to load experiences. Please refresh the page to try again.';
+    resumeStatus.textContent = 'Open a Drawer to see your Collection.';
     return false;
   }
+
+}
+);
+fragment.append(node);
+  
+ }
+ buttonitems.replaceChildren(fragment);
+ return true;
+ //const modelname = await ResumeItem.find({category: "test"});
+} catch{
+ buttonitems.textContent = 'Open a Drawer to see your Collection.';
+    return false;
+}
 }
 
+
+// ok, got it running only when i click the button, now i need to be able to make it search for a specific category
+//delete does it with item.category, but that's because it's stored inside an element, 
+//if i can create a drop down and store the button under there maybe itll work the same way
+//but for that drop down i still need to be able to search for a specific feild, and we run into the same dilemma
+
+//it seems like i meed to use model.find but to do that i need to be able to get the model name, which i can't seem to do
+//need to figure out how to import that variable without breaking things
+
 async function deleteItem(item, article) {
-  if (busy || !confirm(`Delete ${item.job_title} at ${item.employer}?`)) return;
+  if (busy || !confirm(`Delete ${item.category} at ${item.employer}?`)) return;
   setBusy(true);
   resumeStatus.textContent = 'Deleting experience…';
   try {
@@ -163,3 +223,4 @@ form.addEventListener('submit', async (event) => {
 });
 
 loadItems();
+

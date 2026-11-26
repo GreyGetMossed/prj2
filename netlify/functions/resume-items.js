@@ -8,7 +8,9 @@ export default async (request) => {
 
   try {
     await connectDatabase();
-    const items = await ResumeItem.find().lean();
+    const cat = new URL(request.url).searchParams.get("category");
+    const filter = (cat)? {category: cat}:{}
+    const items = await ResumeItem.find(filter).lean();
     return Response.json(items);
   } catch (error) {
     console.error('Resume API error:', error.name);
